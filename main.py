@@ -23,3 +23,63 @@ back = pygame.transform.scale(back, tamanho)
 space = pygame.transform.scale(space, tamanho)
 pygame.mixer.music.load('stws.mp3')
 pygame.mixer.music.play(-1)
+
+def desenhar_texto(texto, fonte, cor, posicao):
+    texto_surface = fonte.render(texto, True, cor)
+    texto_rect = texto_surface.get_rect()
+    texto_rect.center = posicao
+    display.blit(texto_surface, texto_rect)
+
+
+def criar_circulo(circles, mouse_pos):
+    nome_circulo = asknome()
+    circles.append((mouse_pos, nome_circulo))
+    desenhar_circle(circles)
+    if len(circles) > 1:
+        desenhar_lines(circles[-2][0], circles[-1][0])
+
+
+def desenhar_circle(circles):
+    global font
+    display.blit(space, (0, 0))
+    desenhar_texto("f9 para Apagar", font2, white, (745, 20))
+    desenhar_texto("f10 para Salvar", font2, white, (745, 40))
+    desenhar_texto("f11 para Carregar", font2, white, (745, 60))
+
+    total_distance = 0 
+
+    for i in range(len(circles)):
+        pos, name = circles[i]
+        pygame.draw.circle(display, (255, 255, 255), pos, 5)
+        font = pygame.font.Font(None, 20)
+        name_text = font.render(name, True, (255, 255, 255))
+        display.blit(name_text, (pos[0], pos[1] + 10))
+
+        if i > 0:
+            distance = pygame.math.Vector2(pos).distance_to(circles[i - 1][0])
+            total_distance += distance
+    if len(circles) > 1:
+        for i in range(len(circles) - 1):
+            start_pos = circles[i][0]
+            end_pos = circles[i + 1][0]
+            desenhar_lines(start_pos, end_pos)
+            line_distance = pygame.math.Vector2(end_pos).distance_to(start_pos)
+            line_text = font.render(f"Distância: {line_distance:.2f}", True, (255, 255, 255))
+            line_pos = (start_pos[0] + (end_pos[0] - start_pos[0]) // 2,
+                        start_pos[1] + (end_pos[1] - start_pos[1]) // 2)
+            display.blit(line_text, line_pos)
+    total_text = font.render(f"Soma Total: {total_distance:.2f}", True, (255, 255, 255))
+    total_pos = (10, 10)
+    display.blit(total_text, total_pos)
+
+    pygame.display.update()
+
+
+def desenhar_lines(start_pos, end_pos):
+    pygame.draw.line(display, white, start_pos, end_pos, 1)
+
+def asknome():
+    root = tk.Tk()
+    root.withdraw()
+    name = tk.simpledialog.askstring("espaço", "Digíte o nome da estrela: ")
+    return name if name else "desconhecida"
