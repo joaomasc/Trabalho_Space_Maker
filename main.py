@@ -83,3 +83,53 @@ def asknome():
     root.withdraw()
     name = tk.simpledialog.askstring("espaço", "Digíte o nome da estrela: ")
     return name if name else "desconhecida"
+def save_data(circles):
+    with open("circles.txt", "w") as file:
+        for pos, name in circles:
+            file.write(f"{pos[0]},{pos[1]},{name}\n")
+
+
+def load_data():
+    circles = []
+    try:
+        with open("circles.txt", "r") as file:
+            for line in file:
+                x, y, name = line.strip().split(",")
+                pos = (int(x), int(y))
+                circles.append((pos, name))
+        return circles
+    except:
+        with open('circles.txt', 'w') as file:
+            pass
+
+
+def desenhar_menu():
+    display.blit(back, (0, 0))
+    mouse_pos = pygame.mouse.get_pos()
+    botao_load_rect = pygame.Rect(tamanho[0] - 200, tamanho[1] // 2 - 25, 150, 30)
+    botao_start_rect = pygame.Rect(tamanho[0] - 200, tamanho[1] // 2 - 75, 150, 30)
+    botao_quit_rect = pygame.Rect(tamanho[0] - 200, tamanho[1] // 2 - -25, 150, 30)
+    if botao_load_rect.collidepoint(mouse_pos):
+        pygame.draw.rect(display, black, botao_load_rect)
+        desenhar_texto("Load", font, white, (botao_load_rect.center))
+    else:
+        pygame.draw.rect(display, menu_color, botao_load_rect)
+        desenhar_texto("Load", font, pygame.Color('black'), (botao_load_rect.center))
+    if botao_start_rect.collidepoint(mouse_pos):
+        pygame.draw.rect(display, black, botao_start_rect)
+        desenhar_texto("Start", font, white, (botao_start_rect.center))
+    else:
+        pygame.draw.rect(display, menu_color, botao_start_rect)
+        desenhar_texto("Start", font, pygame.Color('black'), (botao_start_rect.center))
+    if botao_quit_rect.collidepoint(mouse_pos):
+        pygame.draw.rect(display, black, botao_quit_rect)
+        desenhar_texto("Quit Game", font, white, (botao_quit_rect.center))
+    else:
+        pygame.draw.rect(display, menu_color, botao_quit_rect)
+        desenhar_texto("Quit Game", font, black, (botao_quit_rect.center))
+
+
+def verificar_botao(x, y, largura, altura):
+    mouse_pos = pygame.mouse.get_pos()
+    if x < mouse_pos[0] < x + largura and y < mouse_pos[1] < y + altura:
+        return True
