@@ -133,3 +133,47 @@ def verificar_botao(x, y, largura, altura):
     mouse_pos = pygame.mouse.get_pos()
     if x < mouse_pos[0] < x + largura and y < mouse_pos[1] < y + altura:
         return True
+def main():
+    circles = []
+    running = True
+    menu_mode = True
+    game_mode = False
+    while running:
+        if menu_mode:
+            desenhar_menu()
+        elif game_mode:
+            desenhar_circle(circles)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                if len(circles) > 0:
+                    save_data(circles)
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_F9:
+                    circles = []
+                if event.key == pygame.K_F10:
+                    save_data(circles)
+                if event.key == pygame.K_F11:
+                    circles = load_data()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if menu_mode:
+                    if verificar_botao(tamanho[0] - 200, tamanho[1] // 2 - 25, 150, 30):
+                        circles = load_data()
+                        menu_mode = False
+                        game_mode = True
+                    elif verificar_botao(tamanho[0] - 200, tamanho[1] // 2 - 75, 150, 30):
+                        menu_mode = False
+                        game_mode = True
+                    elif verificar_botao(tamanho[0] - 200, tamanho[1] // 2 - -25, 150, 30):
+                        if len(circles) > 0:
+                            save_data(circles)
+                        running = False
+                elif game_mode:
+                    criar_circulo(circles, pygame.mouse.get_pos())
+
+        pygame.display.update()
+        clock.tick(60)
+
+
+
+main()
